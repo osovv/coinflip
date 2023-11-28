@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Игра "Нетранзитивная Орлянка"</title>
+    <!-- Ссылки на CSS файлы и/или встроенные стили -->
+    <link rel="stylesheet" type="text/css" href="styles.css" />
+  </head>
+  <body>
+    <div id="inputForm">
+      <label for="inputN">Введите N: </label>
+      <input type="number" id="inputN" min="1" />
+
+      <label for="inputIterations">Количество итераций для каждой пары: </label>
+      <input type="number" id="inputIterations" min="1" />
+
+      <button id="calculateButton">Посчитать</button>
+    </div>
+
+    <div id="loadingIndicator" style="display: none; text-align: center">
+      Выполняется подсчёт...
+      <!-- Здесь можно добавить анимацию загрузки, если есть -->
+    </div>
+
+    <div id="resultTable">
+      <!-- Таблица с результатами будет сгенерирована здесь -->
+    </div>
+
+    <script src="app.js"></script>
+    <!-- Путь к вашему JavaScript файлу -->
+  </body>
+</html>

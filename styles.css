@@ -1,0 +1,74 @@
+body {
+  font-family: "Arial", sans-serif;
+  background-color: #f9f9f9;
+  color: #333;
+  line-height: 1.6;
+  padding: 20px;
+}
+
+#inputForm {
+  background-color: white;
+  max-width: 600px;
+  margin: 30px auto;
+  padding: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+}
+
+#inputForm label {
+  display: block;
+  margin: 10px 0 5px;
+}
+
+#inputForm input {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 20px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  box-sizing: border-box; /* Добавляет padding к общей ширине и высоте */
+}
+
+#calculateButton {
+  display: block;
+  background-color: #0070f3;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  width: 100%;
+}
+
+#calculateButton:hover {
+  background-color: #0056b3;
+}
+
+#resultTable {
+  background-color: white;
+  max-width: 100%;
+  overflow-x: auto;
+  margin: 20px auto;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+table,
+th,
+td {
+  border: 1px solid #ddd;
+}
+
+th,
+td {
+  text-align: center;
+  padding: 8px;
+}
+
+th {
+  background-color: #f0f0f0;
+}

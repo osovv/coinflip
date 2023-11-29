@@ -14,42 +14,80 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
+let permutations = [];
+
+class WorkerPool {
+  constructor(workerURL, numWorkers) {
+    this.workers = [];
+    this.freeWorkers = [];
+    this.tasks = [];
+    this.results = {};
+    this.totalTasks = 0;
+    this.completedTasks = 0;
+
+    for (let i = 0; i < numWorkers; i++) {
+      const worker = new Worker(workerURL);
+      worker.onmessage = (e) => this.handleWorkerMessage(worker, e);
+      this.workers.push(worker);
+      this.freeWorkers.push(worker);
+    }
+  }
+
+  addTask(task) {
+    this.totalTasks++;
+    if (this.freeWorkers.length > 0) {
+      const worker = this.freeWorkers.pop();
+      worker.postMessage(task);
+    } else {
+      this.tasks.push(task);
+    }
+  }
+
+  handleWorkerMessage(worker, e) {
+    this.results[e.data.key] = e.data.result;
+    this.completedTasks++;
+
+    const progress = (this.completedTasks / this.totalTasks) * 100;
+    document.getElementById("progressPercentage").textContent =
+      progress.toFixed(2);
+
+    if (this.tasks.length > 0) {
+      const task = this.tasks.shift();
+      worker.postMessage(task);
+    } else {
+      this.freeWorkers.push(worker);
+    }
+
+    if (this.completedTasks === this.totalTasks) {
+      createResultTable(permutations, this.results);
+      document.getElementById("loadingIndicator").style.display = "none";
+      document.getElementById("progressIndicator").style.display = "none";
+      document.getElementById("resultTable").style.display = "block";
+    }
+  }
+}
+
 function startSimulation(N, iterations) {
-  // Показать индикатор
+  let numWorkers = Number(document.getElementById("inputWorkers").value) || 4;
+
   document.getElementById("loadingIndicator").style.display = "block";
+  document.getElementById("progressIndicator").style.display = "block";
+  document.getElementById("resultTable").style.display = "none";
+  document.getElementById("progressPercentage").textContent = "0";
 
-  // Генерация всех перестановок
-  let permutations = generatePermutations(N);
-
-  let results = {}; // Объект для хранения результатов
-  let pairsProcessed = 0; // Счетчик обработанных пар
-  let totalPairs = permutations.length * permutations.length;
+  permutations = generatePermutations(N);
+  let workerPool = new WorkerPool("worker.js", numWorkers); // Предполагая 4 воркера
 
   permutations.forEach((perm1, index1) => {
     permutations.forEach((perm2, index2) => {
-      // Создание Worker'а для каждой пары перестановок
-      let worker = new Worker("worker.js");
-      worker.postMessage({
-        permutation1: perm1,
-        permutation2: perm2,
-        iterations: iterations,
-      });
-
-      worker.onmessage = function (e) {
-        // Обработка полученных результатов
-        let key = `Pair_${index1}_${index2}`;
-        results[key] = e.data;
-        pairsProcessed++;
-
-        // Проверяем, все ли пары обработаны
-        if (pairsProcessed === totalPairs) {
-          console.log(results);
-          createResultTable(permutations, results);
-          document.getElementById("loadingIndicator").style.display = "none";
-        }
-
-        worker.terminate();
-      };
+      if (index1 < index2) {
+        workerPool.addTask({
+          permutation1: perm1,
+          permutation2: perm2,
+          iterations: iterations,
+          key: `Pair_${index1}_${index2}`,
+        });
+      }
     });
   });
 }

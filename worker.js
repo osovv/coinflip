@@ -1,5 +1,6 @@
 self.addEventListener("message", function (e) {
-  let { permutation1, permutation2, iterations } = e.data;
+  let { permutation1, permutation2, iterations, key } = e.data;
+  console.log(key);
 
   let wins1 = 0; // Количество побед первой перестановки
   let wins2 = 0; // Количество побед второй перестановки
@@ -15,9 +16,8 @@ self.addEventListener("message", function (e) {
 
   // Отправляем результат обратно
   self.postMessage({
-    wins1: wins1,
-    wins2: wins2,
-    total: iterations,
+    key: key,
+    result: { wins1: wins1, wins2: wins2, total: iterations },
   });
 });
 
@@ -51,3 +51,4 @@ function arraysEqual(arr1, arr2) {
   }
   return true;
 }
+1;

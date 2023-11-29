@@ -13,12 +13,19 @@
       <label for="inputIterations">Количество итераций для каждой пары: </label>
       <input type="number" id="inputIterations" min="1" />
 
+      <label for="inputWorkers">Количество воркеров: </label>
+      <input type="number" id="inputWorkers" value="4" min="1" />
+
       <button id="calculateButton">Посчитать</button>
     </div>
 
     <div id="loadingIndicator" style="display: none; text-align: center">
       Выполняется подсчёт...
       <!-- Здесь можно добавить анимацию загрузки, если есть -->
+    </div>
+
+    <div id="progressIndicator" style="display: none; text-align: center">
+      Выполнено: <span id="progressPercentage">0</span>%
     </div>
 
     <div id="resultTable">

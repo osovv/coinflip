@@ -1,6 +1,5 @@
 self.addEventListener("message", function (e) {
   let { permutation1, permutation2, iterations, key } = e.data;
-  console.log(key);
 
   let wins1 = 0; // Количество побед первой перестановки
   let wins2 = 0; // Количество побед второй перестановки

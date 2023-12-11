@@ -60,8 +60,11 @@ class WorkerPool {
 
     if (this.completedTasks === this.totalTasks) {
       createResultTable(permutations, this.results);
+      let cycles = findTransitivityCycles(permutations, this.results);
+      displayTransitivityCycles(cycles);
       document.getElementById("loadingIndicator").style.display = "none";
       document.getElementById("progressIndicator").style.display = "none";
+      document.getElementById("transitivityCycles").style.display = "block";
       document.getElementById("resultTable").style.display = "block";
     }
   }
@@ -73,6 +76,7 @@ function startSimulation(N, iterations) {
   document.getElementById("loadingIndicator").style.display = "block";
   document.getElementById("progressIndicator").style.display = "block";
   document.getElementById("resultTable").style.display = "none";
+  document.getElementById("transitivityCycles").style.display = "none";
   document.getElementById("progressPercentage").textContent = "0";
 
   permutations = generatePermutations(N);
@@ -163,4 +167,55 @@ function generatePermutations(N) {
 
   permute([], 0);
   return result;
+}
+
+function findTransitivityCycles(permutations, results) {
+  // Преобразование результатов в матрицу вероятностей
+  let probabilities = permutations.map((_, i) =>
+    permutations.map((_, j) => {
+      if (i === j) return 0;
+      let key = `Pair_${Math.min(i, j)}_${Math.max(i, j)}`;
+      return i < j
+        ? results[key].wins1 / results[key].total
+        : results[key].wins2 / results[key].total;
+    })
+  );
+
+  // Функция для поиска циклов
+  let cycles = [];
+  function dfs(start, current, visited, path) {
+    visited[current] = true;
+    path.push(current);
+    for (let next = 0; next < permutations.length; next++) {
+      if (probabilities[current][next] - 0.5 > 0.05) {
+        if (next === start && path.length > 2) {
+          cycles.push(
+            path.map((idx) => permutationToString(permutations[idx]))
+          );
+          return;
+        }
+        if (!visited[next]) {
+          dfs(start, next, { ...visited }, [...path]);
+        }
+      }
+    }
+  }
+
+  // Поиск циклов для каждой перестановки
+  permutations.forEach((_, i) => dfs(i, i, {}, []));
+  return cycles;
+}
+
+function permutationToString(permutation) {
+  return permutation.map((bit) => (bit === 0 ? "О" : "Р")).join("");
+}
+
+function displayTransitivityCycles(cycles) {
+  let cyclesContainer = document.getElementById("transitivityCyclesList");
+  cyclesContainer.innerHTML = "";
+  cycles.forEach((cycle) => {
+    cyclesContainer.innerHTML += `<li>${cycle.join(" -> ")} -> ${
+      cycle[0]
+    }</li>`;
+  });
 }
